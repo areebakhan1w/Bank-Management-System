@@ -1,0 +1,494 @@
+package bankmangementsystem;
+
+
+import java.util.ArrayList;             //headerfiles
+import java.util.List;
+
+
+public class Account {           // a class name account
+     private int accountNumber;
+    private String accountHolderName;         //attribites
+    private double balance;
+    private List<Transaction> transactions;
+
+    public Account(int accountNumber, String accountHolderName, double initialBalance) {// constructor
+        this.accountNumber = accountNumber;
+        this.accountHolderName = accountHolderName;
+        this.balance = initialBalance;
+        this.transactions = new ArrayList<>();
+    }
+
+    public int getAccountNumber() {               //getter for account number
+        return accountNumber;
+    }
+
+    public String getAccountHolderName() {    //getter for account holder name
+        return accountHolderName;
+    }
+
+    public void setAccountHolderName(String accountHolderName) {           //setter for  account holder name
+        this.accountHolderName = accountHolderName;
+    }
+
+    public double getBalance() {                                 //getter for balance
+        return balance;
+    }
+
+    public List<Transaction> getTransactions() {               //getter for list for transaction
+        return transactions;
+    }
+
+    public void deposit(double amount) {
+        if (amount > 0) {                                          //method for deposit amount
+            balance += amount;
+            transactions.add(new Transaction("Deposit", amount, balance));
+        }
+        else if  (amount<0){
+            System.out.println(" cant enter negative amount");
+        }
+
+        
+    }
+
+    public boolean withdraw(double amount) {                              //method for withdraw 
+        if (amount > 0 && balance >= amount) {
+            balance -= amount;
+            transactions.add(new Transaction("Withdraw", amount, balance));
+            return true;
+        }
+        else 
+        return false;
+    }
+}
+
+package bankmangementsystem;
+
+ import java.util.ArrayList;                //header files
+import java.util.List;
+public class Bank {                          //class name bank
+ private List<Customer> customers;
+    private List<Staff> staff;
+
+    public Bank() {                              //constructor
+        customers = new ArrayList<>();
+        staff = new ArrayList<>();                     //staff and customers to store in the list of satff and customer
+    }
+
+    public void addCustomer(Customer customer) {                //method to add cudtomers
+        customers.add(customer);
+    }
+
+    public void addStaff(Staff staffMember) {
+        staff.add(staffMember);                                    //method to add staff
+    }
+
+    public Customer customerLogin(String username, String password) {
+        for (Customer customer : customers) {                                       //method for customer login
+            if (customer.getUsername().equals(username) && customer.getPassword().equals(password)) {
+                return customer;
+            }
+        }
+        return null;
+    }
+
+    public Staff staffLogin(String username, String password) {                        //method for staff login
+        for (Staff staffMember : staff) {
+            if (staffMember.getUsername().equals(username) && staffMember.getPassword().equals(password)) {
+                return staffMember;
+            }
+        }
+        return null;
+    }
+
+    public boolean updateAccountDetails(int accountNumber, String newHolderName) {
+        for (Customer customer : customers) {                                              //method for update account
+            if (customer.getAccount().getAccountNumber() == accountNumber) {
+                customer.getAccount().setAccountHolderName(newHolderName);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean deleteAccount(int accountNumber) {
+        for (int i = 0; i < customers.size(); i++) {                                     //method for delete account
+            Customer customer = customers.get(i);
+            if (customer.getAccount().getAccountNumber() == accountNumber) {
+                customers.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public Customer getCustomer(int accountNumber) {
+        for (Customer customer : customers) {                                           //method for get customer
+            if (customer.getAccount().getAccountNumber() == accountNumber) {
+                return customer;
+            }
+        }
+        return null;
+    }
+}
+package bankmangementsystem;
+
+import java.util.List;
+
+ import java.util.Scanner;
+public class BankMangementSystem {
+
+    public static void main(String[] args) {
+   
+        Bank bank = new Bank();                  //creating object of class bank(calling derived class object)
+       
+        Account customerAccount1 = new Account(1001, "Amna", 500.0);               //storing values (accno,name,amount username and password)
+        Customer customer1 = new Customer("Amna", "1234", customerAccount1);
+        bank.addCustomer(customer1);
+        Account customerAccount2 = new Account(1002, "Ayesha", 1000.0);
+        Customer customer2 = new Customer("Ayesha", "5678", customerAccount2);
+        bank.addCustomer(customer2);
+        Account customerAccount3 = new Account(1003, "hafsa", 1500.0);
+        Customer customer3= new Customer("hafsa", "8900", customerAccount3);
+        bank.addCustomer(customer3);
+
+         Account customerAccount4 = new Account(1004, "eman", 2000.0);
+        Customer customer4= new Customer("eman", "9900", customerAccount4);
+        bank.addCustomer(customer4);
+        
+         Account customerAccount5 = new Account(1005, "anaya", 2500.0);
+        Customer customer5= new Customer("anaya", "1000", customerAccount5);
+        bank.addCustomer(customer5);
+        
+
+        //storing staff memnbers name and password 
+        Staff staffMember1 = new Staff("Admin", "admin123");
+        bank.addStaff(staffMember1);
+        Staff staffMember2 = new Staff("Manager", "manager456");
+        bank.addStaff(staffMember2);
+        
+        
+        Scanner scanner = new Scanner(System.in);             //by making scanner object for input output ke leye
+        
+        while (true) {
+            displayMainMenu();
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+            System.out.println("--------------------------");
+            System.out.println("--------------------------");
+            switch (choice) {
+                case 1:
+                    customerLogin(bank, scanner);            //bank refer to object of class bank (contain method for manging account ets)
+                    break;
+                case 2:
+                    staffLogin(bank, scanner);
+                    break;
+                case 3:
+                    System.out.println("Exiting... Thank you!");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice");
+            }
+            System.out.println("--------------------------");
+        }
+    }
+
+    private static void displayMainMenu() {
+         System.out.println("--------------------------");
+        System.out.println("--------------------------");
+        System.out.println("salam!! welcome to our prestigoius");
+        System.out.println(" BANK MANGEMENT SYSTEM");
+        System.out.println("1. Customer Login");
+        System.out.println("2. Staff Login");
+        System.out.println("3. Exit");
+        System.out.println("--------------------------");
+        System.out.println("--------------------------");
+    }
+
+    private static void customerLogin(Bank bank, Scanner scanner) {
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+        System.out.println("--------------------------");
+          System.out.println("--------------------------");
+        Customer customer = bank.customerLogin(username, password);
+        if (customer != null) {
+            customerMenu(customer, scanner);
+        } else {
+            System.out.println("Invalid username or password");
+            System.out.println("Sorry! You are not a part of our system");
+            System.out.println("--------------------------");
+        }
+    }
+
+    private static void staffLogin(Bank bank, Scanner scanner) {
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+        System.out.println("--------------------------");
+        Staff staffMember = bank.staffLogin(username, password);
+        if (staffMember != null) {
+            staffMenu(bank, scanner);
+        } else {
+            System.out.println("Invalid username or password");
+            System.out.println("Sorry! You are not a part of our system");
+            System.out.println("--------------------------");
+        }
+    }
+
+    private static void customerMenu(Customer customer, Scanner scanner) {
+        Account account = customer.getAccount();
+        while (true) {
+            displayCustomerMenu();
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+            System.out.println("--------------------------");
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter amount to deposit: ");
+                    double depositAmount = scanner.nextDouble();
+                    account.deposit(depositAmount);
+                    //System.out.println("Deposit successful.");
+                    if(depositAmount > 0){
+                     System.out.println("Deposit successful.");
+            }
+            
+            else{
+                account.deposit(depositAmount);
+            }
+                    break;
+                case 2:
+                    System.out.print("Enter amount to withdraw: ");
+                    double withdrawAmount = scanner.nextDouble();
+                    if (account.withdraw(withdrawAmount)) {
+                        System.out.println("Withdrawal successful.");
+                    } else {
+                        System.out.println("cant withdraw negative amount");
+                    }
+                    break;
+                case 3:
+                    System.out.println("Account Number: " + account.getAccountNumber());
+                    System.out.println("Account Holder Name: " + account.getAccountHolderName());
+                    System.out.println("Balance: " + account.getBalance());
+                    break;
+                case 4:
+                    List<Transaction> transactions = account.getTransactions();
+                    if (transactions.isEmpty()) {
+                        System.out.println("No transactions found.");
+                    } else {
+                        for (Transaction transaction : transactions) {
+                            System.out.println("Transaction Type: " + transaction.getTransactionType());
+                            System.out.println("Amount: " + transaction.getAmount());
+                            System.out.println("New Balance: " + transaction.getNewBalance());
+                            System.out.println("--------------------------");
+                        }
+                    }
+                    break;
+                case 5:
+                    System.out.println("Logging out...");
+                    return;
+                default:
+                    System.out.println("Invalid choice");
+            }
+            System.out.println("--------------------------");
+        }
+    }
+
+    private static void staffMenu(Bank bank, Scanner scanner) {
+        while (true) {
+            displayStaffMenu();
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            System.out.println("--------------------------");
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter new account number: ");
+                    int accountNumber = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+                    System.out.print("Enter account holder name: ");
+                    String accountHolderName = scanner.nextLine();
+                    System.out.print("Enter initial balance: ");
+                    double initialBalance = scanner.nextDouble();
+                    scanner.nextLine(); // Consume newline
+                    bank.addCustomer(new Customer(accountHolderName, "password", new Account(accountNumber, accountHolderName, initialBalance)));
+                    System.out.println("Account created successfully.");
+                    break;
+                case 2:
+                    System.out.print("Enter account number to update: ");
+                    int updateAccountNumber = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+                    System.out.print("Enter new account holder name: ");
+                    String newHolderName = scanner.nextLine();
+                    if (bank.updateAccountDetails(updateAccountNumber, newHolderName)) {
+                        System.out.println("Account updated successfully.");
+                    } else {
+                        System.out.println("Account not found.");
+                    }
+                    break;
+                case 3:
+                    System.out.print("Enter account number to delete: ");
+                    int deleteAccountNumber = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+                    if (bank.deleteAccount(deleteAccountNumber)) {
+                        System.out.println("Account deleted successfully.");
+                    } else {
+                        System.out.println("Account not found.");
+                    }
+                    break;
+                case 4:
+                    System.out.print("Enter account number to check details: ");
+                    int checkAccountNumber = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+                    Customer customer = bank.getCustomer(checkAccountNumber);
+                    if (customer != null) {
+                        System.out.println("Account Number: " + customer.getAccount().getAccountNumber());
+                        System.out.println("Account Holder Name: " + customer.getAccount().getAccountHolderName());
+                        System.out.println("Balance: " + customer.getAccount().getBalance());
+                    } else {
+                        System.out.println("Account not found.");
+                    }
+                    break;
+                case 5:
+                    System.out.println("Logging out...");
+                    return;
+                default:
+                    System.out.println("Invalid choice");
+            }
+            System.out.println("--------------------------");
+            System.out.println("--------------------------");
+        }
+    }
+
+    private static void displayCustomerMenu() {
+        System.out.println("\nCustomer Menu");
+        System.out.println("1. Deposit");
+        System.out.println("2. Withdraw");
+        System.out.println("3. Account Details");
+        System.out.println("4. Transaction History");
+        System.out.println("5. Logout");
+        System.out.println("--------------------------");
+    }
+
+    private static void displayStaffMenu() {
+        System.out.println("\nStaff Menu");
+        System.out.println("1. Create New Account");
+        System.out.println("2. Update Account Details");
+        System.out.println("3. Delete Account");
+        System.out.println("4. Check Customer Details");
+        System.out.println("5. Logout");
+        System.out.println("--------------------------");
+    }
+}
+
+package bankmangementsystem;
+
+
+public class Customer extends Person {  //a child class that inherit from base class person( single inheritance_)
+
+      private Account account;                 //attributes
+
+    public Customer(String username, String password, Account account) {             //constructor
+        super(username, password);
+        this.account = account;
+    }
+
+    public Account getAccount() {                       //getter for account
+        return account;
+    }
+
+     public void setAccount(Account account) {                  //setter for account
+        this.account = account;
+    }
+}
+
+
+package bankmangementsystem;
+
+public class Person {                              //a class name  person with modifier public (everone can acess)
+     
+
+  private String username;
+    private String password;                             //attributes
+
+    public Person(String username, String password) {               //calling constructor
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void displayCustomerMenu() {
+        System.out.println("\nCustomer Menu");
+        System.out.println("1. Deposit");
+        System.out.println("2. Withdraw");
+        System.out.println("3. Account Details");
+        System.out.println("4. Transaction History");
+        System.out.println("5. Logout");
+    }
+
+    public void displayStaffMenu() {
+        System.out.println("\nStaff Menu");
+        System.out.println("1. Create Account");
+        System.out.println("2. Update Account");
+        System.out.println("3. Delete Account");
+        System.out.println("4. Check Customer Details");
+        System.out.println("5. Logout");
+    }
+}
+package bankmangementsystem;
+
+
+public class Staff extends Person  {  //a child class staff that inherit from person
+  public Staff(String username, String password) {
+        super(username, password);
+    }
+}
+package bankmangementsystem;
+
+
+public class Transaction {  // a class name of transaction with acees modifier public
+private String transactionType;
+    private double amount;
+    private double newBalance;
+
+    public Transaction(String transactionType, double amount, double newBalance) {
+        this.transactionType = transactionType;
+        this.amount = amount;
+        this.newBalance = newBalance;
+    }
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public double getNewBalance() {
+        return newBalance;
+    }
+}
+
+
+
